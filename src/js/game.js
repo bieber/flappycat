@@ -19,7 +19,8 @@
  * @flow
  */
 
-var g = 0.2;
+var G = 0.3;
+var FLAP_ACCELERATION = -0.1;
 
 export default class Game {
 	player: {
@@ -31,10 +32,14 @@ export default class Game {
 		this.player = {y: .5, vy: 0};
 	}
 
+	flap() {
+		this.player.vy += FLAP_ACCELERATION;
+	}
+	
 	tick(dt: number) {
 		var {y, vy} = this.player;
 		y += vy * dt;
-		vy += dt * g;
+		vy += dt * G;
 		this.player = {y, vy};
 	}
 	

@@ -21,6 +21,8 @@
 
 import Game from './game.js';
 
+var SPACEBAR = 32;
+
 var lastTime: ?number = null;
 
 function resizeCanvas(canvas: HTMLCanvasElement) {
@@ -61,5 +63,26 @@ export default function init() {
 	window.onresize = resizeCanvas.bind(null, canvas);
 
 	var game = new Game();
-	window.requestAnimationFrame(frame.bind(null, game, canvas));
+	var keyDownHandler = (event: Event) => {
+		if (!(canvas instanceof HTMLCanvasElement)) {
+			throw new Error('Needed canvas element');
+		}
+
+		if (event.keyCode === SPACEBAR) {
+			event.preventDefault();
+			if (lastTime === null) {
+				window.requestAnimationFrame(frame.bind(null, game, canvas));
+			} else {
+				game.flap();
+			}
+		}
+	};
+	input.addEventListener('keydown', keyDownHandler);
+	document.body.addEventListener('keydown', keyDownHandler);
+	
+	var context = canvas.getContext('2d');
+	if (!(context instanceof CanvasRenderingContext2D)) {
+		throw new Error('Rendering context error');
+	}
+	game.render(context);
 }
