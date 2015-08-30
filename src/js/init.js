@@ -62,7 +62,10 @@ export default function init() {
 	resizeCanvas(canvas);
 	window.onresize = resizeCanvas.bind(null, canvas);
 
-	var game = new Game();
+	var game = new Game(
+		console.log.bind(console, 'score'),
+		console.log.bind(console, 'game over')
+	);
 	var keyDownHandler = (event: Event) => {
 		if (!(canvas instanceof HTMLCanvasElement)) {
 			throw new Error('Needed canvas element');
