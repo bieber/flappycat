@@ -20,17 +20,65 @@
  */
 
 import Game from './game.js';
+import Audio from './audio.js';
 
 var SPACEBAR = 32;
 
 var lastTime: ?number = null;
 
-function resizeCanvas(canvas: HTMLCanvasElement) {
+var canvas: HTMLCanvasElement = getCanvas();
+var input: HTMLInputElement = getInput();
+
+var game: Game = new Game(
+	console.log.bind(console, 'score'),
+	console.log.bind(console, 'game over')
+);
+var audio: Audio = new Audio;
+
+
+function getCanvas(): HTMLCanvasElement {
+	var canvas = document.getElementById('canvas');
+	if (!(canvas instanceof HTMLCanvasElement)) {
+		throw new Error('Canvas element must be a canvas');
+	}
+	return canvas;
+}
+
+function getInput(): HTMLInputElement {
+	var input = document.getElementById('input');
+	if (!(input instanceof HTMLInputElement)) {
+		throw new Error('input must be an input element');
+	}
+	return input;
+}
+
+function resizeCanvas() {
 	canvas.width = document.documentElement.clientWidth;
 	canvas.height = document.documentElement.clientHeight - 30;
 }
 
-function frame(game: Game, canvas: HTMLCanvasElement, timeStamp: number) {
+function onFlap(event: Event) {
+	if (event.keyCode === SPACEBAR) {
+		event.preventDefault();
+		if (lastTime === null) {
+			window.requestAnimationFrame(frame);
+			audio.start();
+		} else {
+			game.flap();
+		}
+	}
+}
+
+function render() {
+	var context = canvas.getContext('2d');
+	if (!(context instanceof CanvasRenderingContext2D)) {
+		throw new Error('Rendering context error');
+	}
+	game.renderScreen(context);
+	game.renderAudio(audio);
+}
+
+function frame(timeStamp: number) {
 	if (lastTime) {
 		var dt = (timeStamp - lastTime) / 1000;
 		game.tick(dt);
@@ -39,53 +87,15 @@ function frame(game: Game, canvas: HTMLCanvasElement, timeStamp: number) {
 		lastTime = timeStamp;
 	}
 
-	var context = canvas.getContext('2d');
-	if (!(context instanceof CanvasRenderingContext2D)) {
-		throw new Error('Rendering context error');
-	}
-	game.render(context);
-	
-	window.requestAnimationFrame(frame.bind(null, game, canvas));
+	render();
+	window.requestAnimationFrame(frame);
 }
 
 export default function init() {
-	var canvas = document.getElementById('canvas');
-	if (!(canvas instanceof HTMLCanvasElement)) {
-		throw new Error('Canvas element must be a canvas');
-	}
+	resizeCanvas();
+	window.onresize = resizeCanvas;
 
-	var input = document.getElementById('input');
-	if (!(input instanceof HTMLInputElement)) {
-		throw new Error('input must be an input element');
-	}
-	
-	resizeCanvas(canvas);
-	window.onresize = resizeCanvas.bind(null, canvas);
-
-	var game = new Game(
-		console.log.bind(console, 'score'),
-		console.log.bind(console, 'game over')
-	);
-	var keyDownHandler = (event: Event) => {
-		if (!(canvas instanceof HTMLCanvasElement)) {
-			throw new Error('Needed canvas element');
-		}
-
-		if (event.keyCode === SPACEBAR) {
-			event.preventDefault();
-			if (lastTime === null) {
-				window.requestAnimationFrame(frame.bind(null, game, canvas));
-			} else {
-				game.flap();
-			}
-		}
-	};
-	input.addEventListener('keydown', keyDownHandler);
-	document.body.addEventListener('keydown', keyDownHandler);
-	
-	var context = canvas.getContext('2d');
-	if (!(context instanceof CanvasRenderingContext2D)) {
-		throw new Error('Rendering context error');
-	}
-	game.render(context);
+	input.addEventListener('keydown', onFlap);
+	document.body.addEventListener('keydown', onFlap);
+	render();
 }

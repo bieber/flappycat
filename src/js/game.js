@@ -19,6 +19,8 @@
  * @flow
  */
 
+import Audio from './audio.js';
+
 type Pipe = {
 	x: number;
 	top: number;
@@ -27,8 +29,8 @@ type Pipe = {
 
 var PLAYER_X = 0.1;
 var PIPE_VX = -0.1;
-var G = 0.35;
-var FLAP_ACCELERATION = -0.12;
+var G = 0.4;
+var FLAP_ACCELERATION = -0.18;
 
 export default class Game {
 	_player: {
@@ -56,7 +58,7 @@ export default class Game {
 	flap() {
 		this._player.vy += FLAP_ACCELERATION;
 	}
-	
+
 	tick(dt: number) {
 		// Caching pipes that haven't passed the player yet
 		var pipesPastPlayer = {};
@@ -105,12 +107,12 @@ export default class Game {
 			this._pipes.push(this._randomPipe());
 		}
 	}
-	
-	render(context: CanvasRenderingContext2D) {
+
+	renderScreen(context: CanvasRenderingContext2D) {
 		var {width, height} = context.canvas;
 
 		context.clearRect(0, 0, width, height);
-		
+
 		context.fillStyle = 'black';
 		context.fillRect(0, 0, width, height);
 
@@ -133,7 +135,7 @@ export default class Game {
 				var pipeTop = p.top * height;
 				var pipeBottom = p.bottom * height;
 				var pipeBottomHeight = (1 - p.bottom) * height;
-				
+
 				context.fillRect(
 					pipeCenterX - pipeWidth / 2,
 					0,
@@ -150,10 +152,25 @@ export default class Game {
 		);
 	}
 
+	renderAudio(audio: Audio) {
+		for (var i = 0; i < this._pipes.length; i++) {
+			var pipe = this._pipes[i];
+			if (pipe.x >= PLAYER_X) {
+				audio.setPositions(
+					pipe.top,
+					pipe.bottom,
+					this._player.y,
+					pipe.x - PLAYER_X
+				);
+				return;
+			}
+		}
+	}
+
 	_randomPipe(): Pipe {
 		// TODO: Figure out a better way to scale this
 		var openingSize = (50 - this._score) / 100;
-		
+
 		var top = (1 - openingSize) * Math.random();
 		var bottom = top + openingSize;
 		var x = 1.0;
