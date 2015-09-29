@@ -111,8 +111,6 @@ export default class Game {
 	renderScreen(context: CanvasRenderingContext2D) {
 		var {width, height} = context.canvas;
 
-		context.clearRect(0, 0, width, height);
-
 		context.fillStyle = 'black';
 		context.fillRect(0, 0, width, height);
 
