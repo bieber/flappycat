@@ -28,9 +28,9 @@ type Pipe = {
 };
 
 var PLAYER_X = 0.1;
-var PIPE_VX = -0.1;
-var G = 0.4;
-var FLAP_ACCELERATION = -0.18;
+var PIPE_VX = -0.12;
+var G = 1.6;
+var FLAP_V = -0.65;
 
 export default class Game {
 	_player: {
@@ -56,7 +56,7 @@ export default class Game {
 	}
 
 	flap() {
-		this._player.vy += FLAP_ACCELERATION;
+		this._player.vy = FLAP_V;
 	}
 
 	tick(dt: number) {
