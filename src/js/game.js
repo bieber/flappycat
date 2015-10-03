@@ -32,6 +32,13 @@ var PIPE_VX = -0.12;
 var G = 1.6;
 var FLAP_V = -0.65;
 
+var MAX_SCORE = 10;
+
+var MIN_PIPE_MARGIN = 0.1;
+var MAX_PIPE_MARGIN = 0.5;
+var MIN_PIPE_OPENING = 0.3;
+var MAX_PIPE_OPENING = 0.8;
+
 export default class Game {
 	_player: {
 		y: number;
@@ -101,7 +108,10 @@ export default class Game {
 		this._pipes = this._pipes.filter((p, i, ps) => p.x > 0);
 
 		// Adding a new pipe if necessary
-		var maximumPipeMargin = (70 - this._score) / 200;
+		var maximumPipeMargin = MIN_PIPE_MARGIN
+			+ (MAX_PIPE_MARGIN - MIN_PIPE_MARGIN)
+			* (1 - this._scoreRatio());
+
 		var rightMostPipe = this._pipes[this._pipes.length - 1];
 		if (1 - rightMostPipe.x > maximumPipeMargin) {
 			this._pipes.push(this._randomPipe());
@@ -212,6 +222,10 @@ export default class Game {
 		}
 	}
 
+	_scoreRatio(): number {
+		return Math.min(this._score, MAX_SCORE) / MAX_SCORE;
+	}
+
 	_playerCoordinates(width: number, height: number): {
 		playerCenterX: number;
 		playerCenterY: number;
@@ -241,8 +255,10 @@ export default class Game {
 	}
 
 	_randomPipe(): Pipe {
-		// TODO: Figure out a better way to scale this
-		var openingSize = (50 - this._score) / 100;
+		var openingSize = MIN_PIPE_OPENING
+			+ ((1 - this._scoreRatio())
+					* (MAX_PIPE_OPENING - MIN_PIPE_OPENING)
+			);
 
 		var top = (1 - openingSize) * Math.random();
 		var bottom = top + openingSize;
