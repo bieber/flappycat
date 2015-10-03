@@ -44,6 +44,14 @@ function getCanvas(): HTMLCanvasElement {
 	return canvas;
 }
 
+function getContext(): CanvasRenderingContext2D {
+	var context = canvas.getContext('2d');
+	if (!(context instanceof CanvasRenderingContext2D)) {
+		throw new Error('Rendering context error');
+	}
+	return context;
+}
+
 function getInput(): HTMLInputElement {
 	var input = document.getElementById('input');
 	if (!(input instanceof HTMLInputElement)) {
@@ -55,6 +63,10 @@ function getInput(): HTMLInputElement {
 function resizeCanvas() {
 	canvas.width = document.documentElement.clientWidth;
 	canvas.height = document.documentElement.clientHeight - 30;
+
+	var context = getContext();
+	context.fillStyle = 'black';
+	context.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 function onFlap(event: Event) {
@@ -69,17 +81,12 @@ function onFlap(event: Event) {
 	}
 }
 
-function render() {
-	var context = canvas.getContext('2d');
-	if (!(context instanceof CanvasRenderingContext2D)) {
-		throw new Error('Rendering context error');
-	}
-	game.renderScreen(context);
-	game.renderAudio(audio);
-}
-
 function frame(timeStamp: number) {
+	var context = getContext();
+
 	if (lastTime) {
+		game.cleanScreen(context);
+
 		var dt = (timeStamp - lastTime) / 1000;
 		game.tick(dt);
 		lastTime = timeStamp;
@@ -87,7 +94,8 @@ function frame(timeStamp: number) {
 		lastTime = timeStamp;
 	}
 
-	render();
+	game.renderScreen(context);
+	game.renderAudio(audio);
 	window.requestAnimationFrame(frame);
 }
 
@@ -97,5 +105,7 @@ export default function init() {
 
 	input.addEventListener('keydown', onFlap);
 	document.body.addEventListener('keydown', onFlap);
-	render();
+
+	var context = getContext();
+	game.renderScreen(context);
 }

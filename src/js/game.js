@@ -108,18 +108,63 @@ export default class Game {
 		}
 	}
 
+	// cleanScreen selectively removes only the elements that will
+	// need redrawing from the screen
+	cleanScreen(context: CanvasRenderingContext2D) {
+		var {width, height} = context.canvas;
+		context.fillStyle = 'black';
+
+		// Clearing the player
+		var {
+			playerCenterX,
+			playerCenterY,
+			playerRadius,
+		} = this._playerCoordinates(width, height);
+		context.fillRect(
+			playerCenterX - playerRadius - 1,
+			playerCenterY - playerRadius - 1,
+			playerRadius * 2 + 2,
+			playerRadius * 2 + 2
+		);
+
+		// Clearing the pipes
+		this._pipes.forEach(
+			(p, i, ps) => {
+				var {
+					pipeCenterX,
+					pipeWidth,
+					pipeTop,
+					pipeBottom,
+					pipeBottomHeight,
+				} = this._pipeCoordinates(p, width, height);
+
+				context.fillRect(
+					pipeCenterX - pipeWidth / 2 - 2,
+					0,
+					pipeWidth + 4,
+					pipeTop + 1
+				);
+				context.fillRect(
+					pipeCenterX - pipeWidth / 2 - 2,
+					pipeBottom - 1,
+					pipeWidth + 4,
+					pipeBottomHeight + 1
+				);
+			}
+		);
+	}
+
 	renderScreen(context: CanvasRenderingContext2D) {
 		var {width, height} = context.canvas;
 
-		context.fillStyle = 'black';
-		context.fillRect(0, 0, width, height);
-
 		// Drawing the player
-		context.strokeStyle = 'white';
-		var playerCenterX = PLAYER_X * width;
-		var playerCenterY = this._player.y * height;
-		var playerRadius = Math.min(width, height) * 0.01;
+		var {
+			playerCenterX,
+			playerCenterY,
+			playerRadius
+		} = this._playerCoordinates(width, height);
 
+		context.strokeStyle = 'white';
 		context.beginPath();
 		context.arc(playerCenterX, playerCenterY, playerRadius, 0, Math.PI * 2);
 		context.stroke();
@@ -128,11 +173,13 @@ export default class Game {
 		context.fillStyle = 'green';
 		this._pipes.forEach(
 			(p, i, ps) => {
-				var pipeCenterX = p.x * width;
-				var pipeWidth = Math.min(width, height) * 0.02;
-				var pipeTop = p.top * height;
-				var pipeBottom = p.bottom * height;
-				var pipeBottomHeight = (1 - p.bottom) * height;
+				var {
+					pipeCenterX,
+					pipeWidth,
+					pipeTop,
+					pipeBottom,
+					pipeBottomHeight,
+				} = this._pipeCoordinates(p, width, height);
 
 				context.fillRect(
 					pipeCenterX - pipeWidth / 2,
@@ -163,6 +210,34 @@ export default class Game {
 				return;
 			}
 		}
+	}
+
+	_playerCoordinates(width: number, height: number): {
+		playerCenterX: number;
+		playerCenterY: number;
+		playerRadius: number;
+	} {
+		return {
+			playerCenterX: PLAYER_X * width,
+			playerCenterY: this._player.y * height,
+			playerRadius: Math.min(width, height) * 0.01,
+		};
+	}
+
+	_pipeCoordinates(pipe: Pipe, width: number, height: number): {
+		pipeCenterX: number;
+		pipeWidth: number;
+		pipeTop: number;
+		pipeBottom: number;
+		pipeBottomHeight: number;
+	} {
+		return {
+			pipeCenterX: pipe.x * width,
+			pipeWidth: Math.min(width, height) * 0.02,
+			pipeTop: pipe.top * height,
+			pipeBottom: pipe.bottom * height,
+			pipeBottomHeight: (1 - pipe.bottom) * height,
+		};
 	}
 
 	_randomPipe(): Pipe {
