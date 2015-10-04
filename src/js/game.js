@@ -32,7 +32,7 @@ var PIPE_VX = -0.12;
 var G = 1.6;
 var FLAP_V = -0.65;
 
-var MAX_SCORE = 10;
+var MAX_SCORE = 50;
 
 var MIN_PIPE_MARGIN = 0.1;
 var MAX_PIPE_MARGIN = 0.5;
