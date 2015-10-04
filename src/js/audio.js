@@ -80,6 +80,14 @@ export default class Audio {
 		this._gain.gain.value = 0;
 	}
 
+	toggle() {
+		if (this._gain.gain.value > 0) {
+			this.stop();
+		} else {
+			this.start();
+		}
+	}
+
 	_chirpOn() {
 		this._chirpGain.gain.value = 1;
 		setTimeout(this._chirpOff.bind(this), this._chirpPeriod);

@@ -2,6 +2,45 @@ body {
 	margin: 0px 0px 0px 0px;
 }
 
+p#score_display {
+	color: white;
+	font-size: 30px;
+
+	position: absolute;
+	top: 0px;
+	right: 30px;
+}
+
+h1#instructions_header {
+	color: white;
+	font-size: 30px;
+
+	position: absolute;
+	left: 55%;
+	bottom: 84%;
+}
+
+div#instructions_1 {
+	color: white;
+	font-size: 15px;
+	width: 20%;
+
+	position: absolute;
+	bottom: 10%;
+	left: 55%;
+	top: 15%;
+}
+
+div#instructions_2 {
+	color: white;
+	font-size: 15px;
+	width: 20%;
+
+	position: absolute;
+	left: 77%;
+	top: 15%;
+}
+
 canvas {
 	left: 0px;
 	top: 0px;

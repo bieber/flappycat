@@ -23,6 +23,9 @@ import Game from './game.js';
 import Audio from './audio.js';
 
 var SPACEBAR = 32;
+var I = 73;
+var R = 82;
+var S = 83;
 
 var lastTime: ?number = null;
 
@@ -30,11 +33,18 @@ var canvas: HTMLCanvasElement = getCanvas();
 var input: HTMLInputElement = getInput();
 
 var game: Game = new Game(
-	console.log.bind(console, 'score'),
-	console.log.bind(console, 'game over')
+	setScore,
+	stopGame
 );
 var audio: Audio = new Audio;
 
+var active: bool = false;
+
+// I know this is dumb, it's just a little hack to get around Web
+// mode's handling of generic types (in a function declaration it
+// would break indentation).
+
+type NodeArray = Array<HTMLElement>;
 
 function getCanvas(): HTMLCanvasElement {
 	var canvas = document.getElementById('canvas');
@@ -60,28 +70,68 @@ function getInput(): HTMLInputElement {
 	return input;
 }
 
+function getInstructions(): NodeArray {
+	return [
+		document.getElementById('instructions_header'),
+		document.getElementById('instructions_1'),
+		document.getElementById('instructions_2'),
+	];
+}
+
+function setScore(score: number) {
+	var node = document.getElementById('score');
+	node.textContent = score.toString();
+}
+
+function onKeyDown(event: Event) {
+	if (event.ctrlKey) {
+		return;
+	}
+
+	if (event.keyCode === SPACEBAR) {
+		event.preventDefault();
+		if (active) {
+			game.flap();
+		} else {
+			resetGame();
+			startGame();
+		}
+	} else if (event.keyCode === I) {
+		getInstructions().forEach(
+			(node, i, nodes) => {
+				if (node.style.display !== '') {
+					node.style.display = '';
+				} else {
+					node.style.display = 'none';
+				}
+			}
+		);
+	} else if (event.keyCode === R) {
+		event.preventDefault();
+		resetGame();
+	} else if (event.keyCode === S) {
+		audio.toggle();
+	}
+}
+
 function resizeCanvas() {
+	var heightOffset = getInput().offsetHeight * 1.5;
+
 	canvas.width = document.documentElement.clientWidth;
-	canvas.height = document.documentElement.clientHeight - 30;
+	canvas.height = document.documentElement.clientHeight - heightOffset;
 
 	var context = getContext();
 	context.fillStyle = 'black';
 	context.fillRect(0, 0, canvas.width, canvas.height);
+	game.renderScreen(context);
 }
 
-function onFlap(event: Event) {
-	if (event.keyCode === SPACEBAR) {
-		event.preventDefault();
-		if (lastTime === null) {
-			window.requestAnimationFrame(frame);
-			audio.start();
-		} else {
-			game.flap();
-		}
-	}
-}
 
 function frame(timeStamp: number) {
+	if (!active) {
+		return;
+	}
+
 	var context = getContext();
 
 	if (lastTime) {
@@ -99,13 +149,35 @@ function frame(timeStamp: number) {
 	window.requestAnimationFrame(frame);
 }
 
-export default function init() {
+function startGame() {
+	active = true;
+	setScore(0);
+	window.requestAnimationFrame(frame);
+	audio.start();
+}
+
+function stopGame() {
+	active = false;
+	audio.stop();
+}
+
+function resetGame() {
+	active = false;
+	game = new Game(
+		setScore,
+		stopGame
+	);
 	resizeCanvas();
+	audio.stop();
+	setScore(0);
+	lastTime = null;
+	game.renderScreen(getContext());
+}
+
+export default function init() {
 	window.onresize = resizeCanvas;
+	input.addEventListener('keydown', onKeyDown);
+	document.body.addEventListener('keydown', onKeyDown);
 
-	input.addEventListener('keydown', onFlap);
-	document.body.addEventListener('keydown', onFlap);
-
-	var context = getContext();
-	game.renderScreen(context);
+	resetGame();
 }

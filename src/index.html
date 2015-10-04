@@ -5,9 +5,54 @@
 		<link rel="stylesheet" type="text/css" href="style.css"></link>
 	</head>
 	<body>
+		<p id="score_display">
+			Score: <span id="score">0</span>
+		</p>
+		<h1 id="instructions_header">Flappy Cat</h1>
+		<div id="instructions_1">
+			<p>
+				This is Flappy Cat, a clone of Flappy Bird intended for the
+				visually impaired.  The premise is roughly the same: navigate
+				a flying character (we'll just say it's a cat in this game)
+				through a series of pipes of varying size and location by
+				making it &quot;flap&quot; up and allowing it to fall with
+				gravity.  You can determine the positions of the cat and the
+				pipes by audio signal.
+			</p>
+			<p>
+				Vertical positions on the screen are represented by tones.  The
+				bottom of the screen is A4 (440Hz) and the top of the screen is
+				A5 (880Hz).  Positions in between are represented by the
+				frequencies in between A4 and A5.
+			</p>
+		</div>
+		<div id="instructions_2">
+			<p>
+				At any given time during the game, you should hear 3 tones.  2
+				of them are constant, and these represent the top and bottom
+				position of the upcoming pipe.  A third is turning on and off,
+				and this represents the position of the cat.  The faster it
+				oscillates, the closer the cat is coming to the next set of
+				pipes.  If the cat passes between the pipes, your score will
+				go up.  If the cat hits one of the pipes or the top or bottom
+				of the screen, the game ends.
+			</p>
+			<p>
+				You can control the game with the following keys.  If you need
+				to put your screen reader into forms mode to register the keys
+				correctly, there is a text input at the bottom of the page.
+			</p>
+			<ul>
+				<li><strong>Spacebar</strong> - Start game, flap</li>
+				<li><strong>R</strong> - Reset the game</li>
+				<li><strong>S</strong> - Toggle sound</li>
+				<li><strong>I</strong> - Toggle these instructions</li>
+			</ul>
+		</div>
+
 		<canvas id="canvas"></canvas>
 		<input type="text" id="input"></input>
-		
+
 		<script type="text/javascript" src="init.js"></script>
 		<script type="text/javascript">
 		require('init')();
