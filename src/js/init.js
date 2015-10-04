@@ -99,10 +99,10 @@ function onKeyDown(event: Event) {
 	} else if (event.keyCode === I) {
 		getInstructions().forEach(
 			(node, i, nodes) => {
-				if (node.style.display !== '') {
-					node.style.display = '';
+				if (node.getAttribute('aria-hidden') === 'true') {
+					node.setAttribute('aria-hidden', 'false');
 				} else {
-					node.style.display = 'none';
+					node.setAttribute('aria-hidden', 'true');
 				}
 			}
 		);

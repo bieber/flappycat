@@ -49,3 +49,7 @@ canvas {
 input {
 	width: 99%;
 }
+
+[aria-hidden="true"] {
+	display: none;
+}

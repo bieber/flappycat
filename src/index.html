@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 		<title>Flappy Cat</title>
-		<link rel="stylesheet" type="text/css" href="style.css"></link>
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<body>
 		<p id="score_display">
-			Score: <span id="score">0</span>
+			Score: <span id="score" aria-live="assertive">0</span>
 		</p>
 		<h1 id="instructions_header">Flappy Cat</h1>
 		<div id="instructions_1">
@@ -51,7 +52,7 @@
 		</div>
 
 		<canvas id="canvas"></canvas>
-		<input type="text" id="input"></input>
+		<input type="text" id="input">
 
 		<script type="text/javascript" src="init.js"></script>
 		<script type="text/javascript">
