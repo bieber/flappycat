@@ -1,8 +1,8 @@
-FROM node:8-alpine AS builder
-ENV NODE_ENV production
+FROM node:10-alpine AS builder
 WORKDIR /app
 COPY . /app
 RUN npm install
+ENV NODE_ENV production
 RUN npm run build
 
 FROM nginx:1.15.6-alpine
