@@ -36,7 +36,7 @@ var game: Game = new Game(
 	setScore,
 	stopGame
 );
-var audio: Audio = new Audio;
+var audio: any = null;
 
 var active: bool = false;
 
@@ -84,6 +84,10 @@ function setScore(score: number) {
 }
 
 function onKeyDown(event: Event) {
+	if (!audio) {
+		audio = new Audio;
+	}
+
 	if (event.ctrlKey) {
 		return;
 	}
